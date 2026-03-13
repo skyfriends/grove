@@ -18,6 +18,12 @@ Grove gives you a single dashboard across all your local repos. See what branch 
 
 ## Install
 
+**Homebrew**
+
+```sh
+brew install skyfriends/tap/grove
+```
+
 **Go**
 
 ```sh
