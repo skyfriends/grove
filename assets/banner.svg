@@ -1,71 +1,37 @@
-<svg width="840" height="200" viewBox="0 0 840 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="840" height="180" viewBox="0 0 840 180" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="840" y2="200" gradientUnits="userSpaceOnUse">
+    <linearGradient id="bg" x1="0" y1="0" x2="840" y2="180" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#1a1b26"/>
-      <stop offset="100%" stop-color="#1e2030"/>
+      <stop offset="100%" stop-color="#1f2030"/>
     </linearGradient>
-    <linearGradient id="canopy" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#98c379"/>
+    <linearGradient id="leaf" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a8d88a"/>
       <stop offset="100%" stop-color="#7cb668"/>
     </linearGradient>
-    <linearGradient id="canopy2" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#7cb668"/>
-      <stop offset="100%" stop-color="#5fa050"/>
-    </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="8" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
   </defs>
 
   <!-- Background -->
-  <rect width="840" height="200" rx="16" fill="url(#bg)"/>
+  <rect width="840" height="180" rx="12" fill="url(#bg)"/>
 
-  <!-- Subtle grid lines -->
-  <line x1="0" y1="66" x2="840" y2="66" stroke="#282c34" stroke-width="0.5"/>
-  <line x1="0" y1="133" x2="840" y2="133" stroke="#282c34" stroke-width="0.5"/>
-
-  <!-- Tree -->
-  <g transform="translate(135, 22)">
+  <!-- Stylized tree -->
+  <g transform="translate(255, 28)">
     <!-- Trunk -->
-    <rect x="42" y="105" width="14" height="50" rx="4" fill="#e5c07b" opacity="0.9"/>
-    <!-- Root lines -->
-    <line x1="42" y1="148" x2="28" y2="160" stroke="#e5c07b" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
-    <line x1="56" y1="148" x2="70" y2="158" stroke="#e5c07b" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
-    <!-- Main canopy -->
-    <ellipse cx="49" cy="65" rx="48" ry="52" fill="url(#canopy)" opacity="0.85"/>
-    <!-- Depth layers -->
-    <ellipse cx="35" cy="55" rx="30" ry="35" fill="url(#canopy2)" opacity="0.5"/>
-    <ellipse cx="65" cy="70" rx="28" ry="30" fill="#98c379" opacity="0.4"/>
-    <!-- Highlight -->
-    <ellipse cx="40" cy="42" rx="18" ry="20" fill="#a8d88a" opacity="0.3"/>
-    <!-- Small branch dots (like worktree nodes) -->
-    <circle cx="20" cy="48" r="4" fill="#61afef" opacity="0.7"/>
-    <circle cx="72" cy="58" r="4" fill="#61afef" opacity="0.7"/>
-    <circle cx="38" cy="28" r="4" fill="#61afef" opacity="0.7"/>
-    <circle cx="60" cy="85" r="3" fill="#61afef" opacity="0.5"/>
-    <circle cx="15" cy="72" r="3" fill="#61afef" opacity="0.5"/>
+    <rect x="28" y="88" width="8" height="52" rx="4" fill="#d4a05a"/>
+    <rect x="28" y="88" width="8" height="52" rx="4" fill="#e5c07b" opacity="0.6"/>
+
+    <!-- Canopy layers - clean geometric -->
+    <path d="M32 18 L58 72 H6 Z" fill="url(#leaf)" opacity="0.95"/>
+    <path d="M32 38 L52 78 H12 Z" fill="#98c379" opacity="0.6"/>
+
+    <!-- Worktree nodes -->
+    <circle cx="16" cy="62" r="3.5" fill="#61afef" opacity="0.8"/>
+    <circle cx="48" cy="58" r="3.5" fill="#61afef" opacity="0.8"/>
+    <circle cx="32" cy="30" r="3.5" fill="#61afef" opacity="0.6"/>
   </g>
 
-  <!-- Text: grove -->
-  <text x="310" y="105" font-family="'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace" font-size="72" font-weight="700" fill="#e2e4e9" letter-spacing="-2">grove</text>
+  <!-- Text -->
+  <text x="330" y="96" font-family="ui-monospace, 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace" font-size="64" font-weight="700" fill="#e2e4e9" letter-spacing="-1">grove</text>
 
   <!-- Tagline -->
-  <text x="314" y="140" font-family="'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace" font-size="17" fill="#5c6370">manage local repos &amp; worktrees</text>
-
-  <!-- Decorative branch lines on right -->
-  <g transform="translate(700, 55)" opacity="0.15">
-    <line x1="0" y1="40" x2="30" y2="20" stroke="#98c379" stroke-width="2" stroke-linecap="round"/>
-    <line x1="30" y1="20" x2="60" y2="25" stroke="#98c379" stroke-width="2" stroke-linecap="round"/>
-    <line x1="30" y1="20" x2="40" y2="0" stroke="#98c379" stroke-width="2" stroke-linecap="round"/>
-    <line x1="0" y1="40" x2="20" y2="60" stroke="#98c379" stroke-width="2" stroke-linecap="round"/>
-    <line x1="0" y1="40" x2="-15" y2="55" stroke="#98c379" stroke-width="2" stroke-linecap="round"/>
-    <circle cx="60" cy="25" r="3" fill="#61afef"/>
-    <circle cx="40" cy="0" r="3" fill="#61afef"/>
-    <circle cx="20" cy="60" r="3" fill="#61afef"/>
-    <circle cx="-15" cy="55" r="3" fill="#61afef"/>
-  </g>
+  <text x="333" y="126" font-family="ui-monospace, 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace" font-size="15" fill="#5c6370" letter-spacing="0.5">manage local repos &amp; worktrees</text>
 </svg>
