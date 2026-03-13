@@ -63,6 +63,7 @@ grove doctor          # check repos for common health issues
 ### Maintain
 
 ```sh
+grove fetch           # fetch all remotes and prune across all repos
 grove sync            # pull latest on clean repos at their default branch
 grove prune           # remove stale remote-tracking references
 grove clean           # interactively pick worktrees to remove
