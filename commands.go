@@ -131,8 +131,10 @@ func cmdStale() {
 	threshold := time.Now().AddDate(0, 0, -cfg.StaleDays)
 
 	type staleBranch struct {
-		branch string
-		days   int
+		repoName string
+		repoPath string
+		branch   string
+		days     int
 	}
 	type repoStale struct {
 		name     string
@@ -167,7 +169,7 @@ func cmdStale() {
 				commitTime := time.Unix(unix, 0)
 				if commitTime.Before(threshold) {
 					days := int(time.Since(commitTime).Hours() / 24)
-					stale = append(stale, staleBranch{branch, days})
+					stale = append(stale, staleBranch{repo.Name, repo.Path, branch, days})
 				}
 			}
 			results[idx] = repoStale{repo.Name, stale}
@@ -180,25 +182,73 @@ func cmdStale() {
 	fmt.Println("  " + divider)
 	fmt.Println()
 
-	found := false
+	// collect all stale branches into a flat list while displaying
+	var allStale []staleBranch
 	for _, r := range results {
 		if len(r.branches) == 0 {
 			continue
 		}
-		found = true
 		fmt.Printf("  %s\n", white.Render(r.name))
 		for _, b := range r.branches {
 			fmt.Printf("    %s  %s\n",
 				yellow.Render(pad(b.branch, 36)),
 				dim.Render(fmt.Sprintf("%dd", b.days)))
+			allStale = append(allStale, b)
 		}
 		fmt.Println()
 	}
 
-	if !found {
+	if len(allStale) == 0 {
 		fmt.Println("  " + dim.Render("no stale branches"))
 		fmt.Println()
+		return
 	}
+
+	// interactive selection
+	var opts []huh.Option[int]
+	for i, b := range allStale {
+		label := pad(b.repoName, 22) + pad(b.branch, 36) + fmt.Sprintf("(%dd ago)", b.days)
+		opts = append(opts, huh.NewOption(label, i))
+	}
+
+	var selected []int
+	height := len(opts) + 6
+	if height > 28 {
+		height = 28
+	}
+
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewMultiSelect[int]().
+				Title("Delete stale branches").
+				Description("space toggle  ·  a select all  ·  enter confirm  ·  esc cancel").
+				Options(opts...).
+				Value(&selected).
+				Height(height),
+		),
+	).WithTheme(customTheme())
+
+	if err := form.Run(); err != nil {
+		return
+	}
+
+	if len(selected) == 0 {
+		fmt.Println("  " + dim.Render("cancelled"))
+		fmt.Println()
+		return
+	}
+
+	fmt.Println()
+	for _, idx := range selected {
+		b := allStale[idx]
+		label := pad(b.repoName, 22) + muted.Render(b.branch)
+		if gitOk(b.repoPath, "branch", "-d", b.branch) {
+			fmt.Printf("  %s    %s\n", okTag.Render("OK"), label)
+		} else {
+			fmt.Printf("  %s  %s\n", failBadge.Render("FAIL"), label)
+		}
+	}
+	fmt.Println()
 }
 
 // ── sync ────────────────────────────────────────────────────────────────────
@@ -273,6 +323,64 @@ func cmdSync() {
 	}
 	if failed > 0 {
 		fmt.Printf("  %s\n", red.Render(fmt.Sprintf("  %d failed", failed)))
+	}
+	fmt.Println()
+}
+
+// ── prune ───────────────────────────────────────────────────────────────────
+
+func cmdPrune() {
+	repos := findRepos()
+
+	fmt.Println()
+	fmt.Printf("  %s\n", white.Render(fmt.Sprintf("pruning %d repos", len(repos))))
+	fmt.Println("  " + divider)
+	fmt.Println()
+
+	type pruneResult struct {
+		name, output string
+		ok           bool
+	}
+
+	results := make([]pruneResult, len(repos))
+	var wg sync.WaitGroup
+	wg.Add(len(repos))
+	for i, r := range repos {
+		go func(idx int, repo Repo) {
+			defer wg.Done()
+			out, err := gitRun(repo.Path, "remote", "prune", "origin")
+			results[idx] = pruneResult{
+				name:   repo.Name,
+				output: out,
+				ok:     err == nil,
+			}
+		}(i, r)
+	}
+	wg.Wait()
+
+	var pruned, failed int
+	for _, r := range results {
+		label := white.Render(pad(r.name, 24))
+		if !r.ok {
+			fmt.Printf("  %s  %s\n", failBadge.Render("FAIL"), label)
+			failed++
+		} else if strings.Contains(r.output, "[pruned]") {
+			fmt.Printf("  %s    %s\n", okTag.Render("OK"), label+muted.Render("pruned"))
+			pruned++
+		} else {
+			fmt.Printf("  %s    %s\n", okTag.Render("OK"), label+dim.Render("clean"))
+		}
+	}
+
+	fmt.Println()
+	if pruned > 0 {
+		fmt.Printf("  %s\n", green.Render(fmt.Sprintf("  %d pruned", pruned)))
+	}
+	if failed > 0 {
+		fmt.Printf("  %s\n", red.Render(fmt.Sprintf("  %d failed", failed)))
+	}
+	if pruned == 0 && failed == 0 {
+		fmt.Println("  " + dim.Render("all remotes clean"))
 	}
 	fmt.Println()
 }

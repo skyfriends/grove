@@ -1,4 +1,4 @@
-module grove
+module github.com/skyfriends/grove
 
 go 1.25.0
 

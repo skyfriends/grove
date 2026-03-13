@@ -26,6 +26,8 @@ func main() {
 		cmdDoctor()
 	case "sync", "s":
 		cmdSync()
+	case "prune", "p":
+		cmdPrune()
 	case "clean", "c":
 		cmdClean()
 	case "nuke":
@@ -69,11 +71,12 @@ func printHelp() {
 	fmt.Println("  " + dim.Render("browse"))
 	fmt.Println("    " + blue.Render("grove") + "              list repos, branches, and worktrees")
 	fmt.Println("    " + blue.Render("grove status") + "       show ahead/behind counts for all repos")
-	fmt.Println("    " + blue.Render("grove stale") + "        find branches with no recent activity")
+	fmt.Println("    " + blue.Render("grove stale") + "        find and interactively delete stale branches")
 	fmt.Println("    " + blue.Render("grove doctor") + "       check repos for common health issues")
 	fmt.Println()
 	fmt.Println("  " + dim.Render("maintain"))
 	fmt.Println("    " + blue.Render("grove sync") + "         pull latest on repos at their default branch")
+	fmt.Println("    " + blue.Render("grove prune") + "        remove stale remote-tracking references")
 	fmt.Println("    " + blue.Render("grove clean") + "        interactively remove worktrees")
 	fmt.Println("    " + blue.Render("grove nuke") + "         remove all clean worktrees for selected repos")
 	fmt.Println("    " + blue.Render("grove reset") + "        switch repos back to their default branch")
