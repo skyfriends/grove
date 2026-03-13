@@ -24,6 +24,8 @@ func main() {
 		cmdStale()
 	case "fetch", "f":
 		cmdFetch()
+	case "doctor":
+		cmdDoctor()
 	case "sync", "s":
 		cmdSync()
 	case "prune", "p":
@@ -72,6 +74,7 @@ func printHelp() {
 	fmt.Println("    " + blue.Render("grove") + "              list repos, branches, and worktrees")
 	fmt.Println("    " + blue.Render("grove status") + "       show ahead/behind counts for all repos")
 	fmt.Println("    " + blue.Render("grove stale") + "        find and interactively delete stale branches")
+	fmt.Println("    " + blue.Render("grove doctor") + "       check repos for common health issues")
 	fmt.Println()
 	fmt.Println("  " + dim.Render("maintain"))
 	fmt.Println("    " + blue.Render("grove fetch") + "        fetch all remotes and prune across all repos")
