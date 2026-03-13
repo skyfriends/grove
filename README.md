@@ -7,9 +7,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/g2i-ai/grove/releases"><img src="https://img.shields.io/github/v/release/g2i-ai/grove?style=flat-square&color=98c379" alt="Release"></a>
-  <a href="https://github.com/g2i-ai/grove/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-5c6370?style=flat-square" alt="License"></a>
-  <a href="https://github.com/g2i-ai/grove/actions"><img src="https://img.shields.io/github/actions/workflow/status/g2i-ai/grove/ci.yml?style=flat-square&color=61afef" alt="CI"></a>
+  <a href="https://github.com/skyfriends/grove/releases"><img src="https://img.shields.io/github/v/release/skyfriends/grove?style=flat-square&color=98c379" alt="Release"></a>
+  <a href="https://github.com/skyfriends/grove/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-5c6370?style=flat-square" alt="License"></a>
+  <a href="https://github.com/skyfriends/grove/actions"><img src="https://img.shields.io/github/actions/workflow/status/skyfriends/grove/ci.yml?style=flat-square&color=61afef" alt="CI"></a>
 </p>
 
 ---
@@ -18,26 +18,20 @@ Grove gives you a single dashboard across all your local repos. See what branch 
 
 ## Install
 
-**Homebrew**
-
-```sh
-brew install g2i-ai/tap/grove
-```
-
 **Go**
 
 ```sh
-go install github.com/g2i-ai/grove@latest
+go install github.com/skyfriends/grove@latest
 ```
 
 **Binary**
 
-Download from [releases](https://github.com/g2i-ai/grove/releases) and put it on your PATH.
+Download from [releases](https://github.com/skyfriends/grove/releases) and put it on your PATH.
 
 **From source**
 
 ```sh
-git clone https://github.com/g2i-ai/grove.git
+git clone https://github.com/skyfriends/grove.git
 cd grove
 make install
 ```
@@ -72,7 +66,7 @@ grove reset           # switch repos back to their default branch
 
 ```sh
 grove wt cray feat/new-thing    # spin up a worktree
-grove clone g2i-ai/grove        # clone into your root dir
+grove clone skyfriends/grove        # clone into your root dir
 grove open cray                 # open in your editor (fuzzy matches)
 ```
 

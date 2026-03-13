@@ -54,21 +54,9 @@ changelog:
     - title: Other
       order: 999
 
-brews:
-  - repository:
-      owner: g2i-ai
-      name: homebrew-tap
-    homepage: https://github.com/g2i-ai/grove
-    description: Manage local git repositories and worktrees
-    license: MIT
-    install: |
-      bin.install "grove"
-    test: |
-      system "#{bin}/grove", "version"
-
 release:
   github:
-    owner: g2i-ai
+    owner: skyfriends
     name: grove
   draft: false
   prerelease: auto

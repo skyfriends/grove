@@ -3,7 +3,7 @@
 ## Development
 
 ```sh
-git clone https://github.com/g2i-ai/grove.git
+git clone https://github.com/skyfriends/grove.git
 cd grove
 go build -o grove .
 ./grove help
