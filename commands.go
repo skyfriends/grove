@@ -277,6 +277,61 @@ func cmdSync() {
 	fmt.Println()
 }
 
+// ── fetch ───────────────────────────────────────────────────────────────────
+
+func cmdFetch() {
+	repos := findRepos()
+
+	fmt.Println()
+	fmt.Printf("  %s\n", white.Render(fmt.Sprintf("fetching %d repos", len(repos))))
+	fmt.Println("  " + divider)
+	fmt.Println()
+
+	type fetchResult struct {
+		name, status string
+	}
+
+	results := make([]fetchResult, len(repos))
+	var wg sync.WaitGroup
+	wg.Add(len(repos))
+	for i, r := range repos {
+		go func(idx int, repo Repo) {
+			defer wg.Done()
+			_, err := gitRun(repo.Path, "fetch", "--all", "--prune")
+			res := fetchResult{name: repo.Name}
+			if err != nil {
+				res.status = "failed"
+			} else {
+				res.status = "ok"
+			}
+			results[idx] = res
+		}(i, r)
+	}
+	wg.Wait()
+
+	var fetched, failed int
+	for _, r := range results {
+		label := pad(r.name, 24)
+		switch r.status {
+		case "ok":
+			fmt.Printf("  %s    %s\n", okTag.Render("OK"), label)
+			fetched++
+		case "failed":
+			fmt.Printf("  %s  %s\n", failBadge.Render("FAIL"), label)
+			failed++
+		}
+	}
+
+	fmt.Println()
+	if failed == 0 {
+		fmt.Println("  " + green.Render(fmt.Sprintf("  %d fetched", fetched)))
+	} else {
+		fmt.Println("  " + green.Render(fmt.Sprintf("  %d fetched", fetched)))
+		fmt.Println("  " + red.Render(fmt.Sprintf("  %d failed", failed)))
+	}
+	fmt.Println()
+}
+
 // ── clean ───────────────────────────────────────────────────────────────────
 
 func cmdClean() {

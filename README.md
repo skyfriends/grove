@@ -56,6 +56,7 @@ grove stale           # branches with no recent activity
 ### Maintain
 
 ```sh
+grove fetch           # fetch all remotes and prune across all repos
 grove sync            # pull latest on clean repos at their default branch
 grove clean           # interactively pick worktrees to remove
 grove nuke            # bulk remove all clean worktrees for selected repos

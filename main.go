@@ -22,6 +22,8 @@ func main() {
 		cmdStatus()
 	case "stale":
 		cmdStale()
+	case "fetch", "f":
+		cmdFetch()
 	case "sync", "s":
 		cmdSync()
 	case "clean", "c":
@@ -70,6 +72,7 @@ func printHelp() {
 	fmt.Println("    " + blue.Render("grove stale") + "        find branches with no recent activity")
 	fmt.Println()
 	fmt.Println("  " + dim.Render("maintain"))
+	fmt.Println("    " + blue.Render("grove fetch") + "        fetch all remotes and prune across all repos")
 	fmt.Println("    " + blue.Render("grove sync") + "         pull latest on repos at their default branch")
 	fmt.Println("    " + blue.Render("grove clean") + "        interactively remove worktrees")
 	fmt.Println("    " + blue.Render("grove nuke") + "         remove all clean worktrees for selected repos")
