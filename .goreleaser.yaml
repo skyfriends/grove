@@ -1,0 +1,75 @@
+version: 2
+
+project_name: grove
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - main: .
+    binary: grove
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+
+archives:
+  - formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - "^chore\\(deps\\):"
+  groups:
+    - title: Features
+      regexp: "^.*feat.*$"
+      order: 0
+    - title: Bug Fixes
+      regexp: "^.*fix.*$"
+      order: 1
+    - title: Other
+      order: 999
+
+brews:
+  - repository:
+      owner: g2i-ai
+      name: homebrew-tap
+    homepage: https://github.com/g2i-ai/grove
+    description: Manage local git repositories and worktrees
+    license: MIT
+    install: |
+      bin.install "grove"
+    test: |
+      system "#{bin}/grove", "version"
+
+release:
+  github:
+    owner: g2i-ai
+    name: grove
+  draft: false
+  prerelease: auto
+  name_template: "v{{ .Version }}"
