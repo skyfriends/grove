@@ -131,8 +131,10 @@ func cmdStale() {
 	threshold := time.Now().AddDate(0, 0, -cfg.StaleDays)
 
 	type staleBranch struct {
-		branch string
-		days   int
+		repoName string
+		repoPath string
+		branch   string
+		days     int
 	}
 	type repoStale struct {
 		name     string
@@ -167,7 +169,7 @@ func cmdStale() {
 				commitTime := time.Unix(unix, 0)
 				if commitTime.Before(threshold) {
 					days := int(time.Since(commitTime).Hours() / 24)
-					stale = append(stale, staleBranch{branch, days})
+					stale = append(stale, staleBranch{repo.Name, repo.Path, branch, days})
 				}
 			}
 			results[idx] = repoStale{repo.Name, stale}
@@ -180,25 +182,73 @@ func cmdStale() {
 	fmt.Println("  " + divider)
 	fmt.Println()
 
-	found := false
+	// collect all stale branches into a flat list while displaying
+	var allStale []staleBranch
 	for _, r := range results {
 		if len(r.branches) == 0 {
 			continue
 		}
-		found = true
 		fmt.Printf("  %s\n", white.Render(r.name))
 		for _, b := range r.branches {
 			fmt.Printf("    %s  %s\n",
 				yellow.Render(pad(b.branch, 36)),
 				dim.Render(fmt.Sprintf("%dd", b.days)))
+			allStale = append(allStale, b)
 		}
 		fmt.Println()
 	}
 
-	if !found {
+	if len(allStale) == 0 {
 		fmt.Println("  " + dim.Render("no stale branches"))
 		fmt.Println()
+		return
 	}
+
+	// interactive selection
+	var opts []huh.Option[int]
+	for i, b := range allStale {
+		label := pad(b.repoName, 22) + pad(b.branch, 36) + fmt.Sprintf("(%dd ago)", b.days)
+		opts = append(opts, huh.NewOption(label, i))
+	}
+
+	var selected []int
+	height := len(opts) + 6
+	if height > 28 {
+		height = 28
+	}
+
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewMultiSelect[int]().
+				Title("Delete stale branches").
+				Description("space toggle  ·  a select all  ·  enter confirm  ·  esc cancel").
+				Options(opts...).
+				Value(&selected).
+				Height(height),
+		),
+	).WithTheme(customTheme())
+
+	if err := form.Run(); err != nil {
+		return
+	}
+
+	if len(selected) == 0 {
+		fmt.Println("  " + dim.Render("cancelled"))
+		fmt.Println()
+		return
+	}
+
+	fmt.Println()
+	for _, idx := range selected {
+		b := allStale[idx]
+		label := pad(b.repoName, 22) + muted.Render(b.branch)
+		if gitOk(b.repoPath, "branch", "-d", b.branch) {
+			fmt.Printf("  %s    %s\n", okTag.Render("OK"), label)
+		} else {
+			fmt.Printf("  %s  %s\n", failBadge.Render("FAIL"), label)
+		}
+	}
+	fmt.Println()
 }
 
 // ── sync ────────────────────────────────────────────────────────────────────

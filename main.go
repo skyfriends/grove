@@ -67,7 +67,7 @@ func printHelp() {
 	fmt.Println("  " + dim.Render("browse"))
 	fmt.Println("    " + blue.Render("grove") + "              list repos, branches, and worktrees")
 	fmt.Println("    " + blue.Render("grove status") + "       show ahead/behind counts for all repos")
-	fmt.Println("    " + blue.Render("grove stale") + "        find branches with no recent activity")
+	fmt.Println("    " + blue.Render("grove stale") + "        find and interactively delete stale branches")
 	fmt.Println()
 	fmt.Println("  " + dim.Render("maintain"))
 	fmt.Println("    " + blue.Render("grove sync") + "         pull latest on repos at their default branch")
