@@ -631,6 +631,102 @@ func cmdClone(target string) {
 	fmt.Println()
 }
 
+// ── doctor ──────────────────────────────────────────────────────────────────
+
+func cmdDoctor() {
+	repos := findRepos()
+
+	type issue struct {
+		repo   string
+		detail string
+	}
+
+	missingOriginHead := make([]issue, len(repos))
+	detachedHead := make([]issue, len(repos))
+	noRemote := make([]issue, len(repos))
+	forgottenWip := make([]issue, len(repos))
+
+	var wg sync.WaitGroup
+	wg.Add(len(repos))
+	for i, r := range repos {
+		go func(idx int, repo Repo) {
+			defer wg.Done()
+
+			// missing origin/HEAD
+			ref := git(repo.Path, "symbolic-ref", "refs/remotes/origin/HEAD")
+			hasRemote := git(repo.Path, "remote") != ""
+			if hasRemote && ref == "" {
+				missingOriginHead[idx] = issue{repo.Name, "origin/HEAD symref not set"}
+			}
+
+			// detached HEAD
+			if repo.Branch == "" {
+				detachedHead[idx] = issue{repo.Name, "HEAD is detached"}
+			}
+
+			// no remote configured
+			if !hasRemote {
+				noRemote[idx] = issue{repo.Name, "no remote configured"}
+			}
+
+			// dirty + off default branch = likely forgotten WIP
+			if repo.Dirty && repo.Branch != "" && repo.Branch != repo.Default {
+				forgottenWip[idx] = issue{repo.Name, repo.Branch}
+			}
+		}(i, r)
+	}
+	wg.Wait()
+
+	// collect non-empty issues
+	collect := func(raw []issue) []issue {
+		var out []issue
+		for _, iss := range raw {
+			if iss.repo != "" {
+				out = append(out, iss)
+			}
+		}
+		return out
+	}
+
+	groups := []struct {
+		label string
+		items []issue
+	}{
+		{"missing origin/HEAD", collect(missingOriginHead)},
+		{"detached HEAD", collect(detachedHead)},
+		{"no remote configured", collect(noRemote)},
+		{"uncommitted changes on non-default branch", collect(forgottenWip)},
+	}
+
+	total := 0
+	for _, g := range groups {
+		total += len(g.items)
+	}
+
+	fmt.Println()
+	if total == 0 {
+		fmt.Printf("  %s  %s\n", green.Render("✓"), white.Render("all repos healthy"))
+		fmt.Printf("  %s\n", dim.Render(fmt.Sprintf("checked %d repos", len(repos))))
+		fmt.Println()
+		return
+	}
+
+	fmt.Printf("  %s\n", white.Render(fmt.Sprintf("%d issues across %d repos", total, len(repos))))
+	fmt.Println("  " + divider)
+
+	for _, g := range groups {
+		if len(g.items) == 0 {
+			continue
+		}
+		fmt.Println()
+		fmt.Printf("  %s  %s\n", yellow.Render("●"), white.Render(g.label))
+		for _, iss := range g.items {
+			fmt.Printf("    %s  %s\n", muted.Render(iss.repo), dim.Render(iss.detail))
+		}
+	}
+	fmt.Println()
+}
+
 // ── open ────────────────────────────────────────────────────────────────────
 
 func cmdOpen(repoName string) {

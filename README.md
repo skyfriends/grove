@@ -51,6 +51,7 @@ grove             # see everything
 grove                 # list repos, branches, worktrees
 grove status          # ahead/behind counts relative to upstream
 grove stale           # branches with no recent activity
+grove doctor          # check repos for common health issues
 ```
 
 ### Maintain
