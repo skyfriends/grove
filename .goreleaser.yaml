@@ -54,6 +54,18 @@ changelog:
     - title: Other
       order: 999
 
+brews:
+  - repository:
+      owner: skyfriends
+      name: homebrew-tap
+    homepage: "https://github.com/skyfriends/grove"
+    description: "A fast CLI for managing local git repositories and worktrees"
+    license: "MIT"
+    install: |
+      bin.install "grove"
+    test: |
+      system "#{bin}/grove", "version"
+
 release:
   github:
     owner: skyfriends
