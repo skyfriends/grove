@@ -24,6 +24,8 @@ func main() {
 		cmdStale()
 	case "sync", "s":
 		cmdSync()
+	case "prune", "p":
+		cmdPrune()
 	case "clean", "c":
 		cmdClean()
 	case "nuke":
@@ -71,6 +73,7 @@ func printHelp() {
 	fmt.Println()
 	fmt.Println("  " + dim.Render("maintain"))
 	fmt.Println("    " + blue.Render("grove sync") + "         pull latest on repos at their default branch")
+	fmt.Println("    " + blue.Render("grove prune") + "        remove stale remote-tracking references")
 	fmt.Println("    " + blue.Render("grove clean") + "        interactively remove worktrees")
 	fmt.Println("    " + blue.Render("grove nuke") + "         remove all clean worktrees for selected repos")
 	fmt.Println("    " + blue.Render("grove reset") + "        switch repos back to their default branch")

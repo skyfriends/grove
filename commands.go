@@ -277,6 +277,64 @@ func cmdSync() {
 	fmt.Println()
 }
 
+// ── prune ───────────────────────────────────────────────────────────────────
+
+func cmdPrune() {
+	repos := findRepos()
+
+	fmt.Println()
+	fmt.Printf("  %s\n", white.Render(fmt.Sprintf("pruning %d repos", len(repos))))
+	fmt.Println("  " + divider)
+	fmt.Println()
+
+	type pruneResult struct {
+		name, output string
+		ok           bool
+	}
+
+	results := make([]pruneResult, len(repos))
+	var wg sync.WaitGroup
+	wg.Add(len(repos))
+	for i, r := range repos {
+		go func(idx int, repo Repo) {
+			defer wg.Done()
+			out, err := gitRun(repo.Path, "remote", "prune", "origin")
+			results[idx] = pruneResult{
+				name:   repo.Name,
+				output: out,
+				ok:     err == nil,
+			}
+		}(i, r)
+	}
+	wg.Wait()
+
+	var pruned, failed int
+	for _, r := range results {
+		label := white.Render(pad(r.name, 24))
+		if !r.ok {
+			fmt.Printf("  %s  %s\n", failBadge.Render("FAIL"), label)
+			failed++
+		} else if strings.Contains(r.output, "[pruned]") {
+			fmt.Printf("  %s    %s\n", okTag.Render("OK"), label+muted.Render("pruned"))
+			pruned++
+		} else {
+			fmt.Printf("  %s    %s\n", okTag.Render("OK"), label+dim.Render("clean"))
+		}
+	}
+
+	fmt.Println()
+	if pruned > 0 {
+		fmt.Printf("  %s\n", green.Render(fmt.Sprintf("  %d pruned", pruned)))
+	}
+	if failed > 0 {
+		fmt.Printf("  %s\n", red.Render(fmt.Sprintf("  %d failed", failed)))
+	}
+	if pruned == 0 && failed == 0 {
+		fmt.Println("  " + dim.Render("all remotes clean"))
+	}
+	fmt.Println()
+}
+
 // ── clean ───────────────────────────────────────────────────────────────────
 
 func cmdClean() {

@@ -57,6 +57,7 @@ grove stale           # branches with no recent activity
 
 ```sh
 grove sync            # pull latest on clean repos at their default branch
+grove prune           # remove stale remote-tracking references
 grove clean           # interactively pick worktrees to remove
 grove nuke            # bulk remove all clean worktrees for selected repos
 grove reset           # switch repos back to their default branch
